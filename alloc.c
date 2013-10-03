@@ -125,7 +125,7 @@ static secno alloc_in_bmp(struct super_block *s, secno near, unsigned n, unsigne
         } while (i != nr);
         rt:
         if (ret) {
-                if (ntfs_sb(s)->sb_chk && ((ret >> 14) != (bs >> 14) || (le32_to_cpu(bmp[(ret & 0x3fff) >> 5]) | ~(((1 << n) - 1) <<  & 0x1f))) != 0xffffffff)) {
+                if (ntfs_sb(s)->sb_chk && ((ret >> 14) != (bs >> 14) || (le32_to_cpu(bmp[(ret & 0x3fff) >> 5]) | ~(((1 << n) - 1) << (ret & 0x1f))) != 0xffffffff)) {
                         ntfs_error(s, "Allocation doesn't work! Wanted %d, allocated at %08x", n, ret);
                         ret = 0;
                         goto b;
@@ -206,7 +206,7 @@ secno ntfs_alloc_sector(struct super_block *s, secno near, unsigned n, int forwa
         if (sec && f_p) {
                 for (i = 0; i < forward; i++) {
                         if (!ntfs_alloc_if_possible(s, sec + i + 1)) {
-                                ntfs_error(s, "Prealloc doesn't work! Wanted %d, allocated at %08x, can't allocate %d", forward,  i);
+                                ntfs_error(s, "Prealloc doesn't work! Wanted %d, allocated at %08x, can't allocate %d", forward, sec, i);
                                 sec = 0;
                                 break;
                         }
