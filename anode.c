@@ -101,7 +101,7 @@ secno ntfs_add_sector_to_btree(struct super_block *s, secno node, int fnod, unsi
                         brelse(bh);
                         return -1;
                 }
-                if (ntfs_alloc_if_possible(s, se = le32_to_cpu(btree->u.external[n].disk_secno) + le32_to_cpu(btree->u.external[n].th))) {
+                if (ntfs_alloc_if_possible(s, se = le32_to_cpu(btree->u.external[n].disk_secno) + le32_to_cpu(btree->u.external[n].length))) {
                         le32_add_cpu(&btree->u.external[n].length, 1);
                         mark_buffer_dirty(bh);
                         brelse(bh);
@@ -115,7 +115,7 @@ secno ntfs_add_sector_to_btree(struct super_block *s, secno node, int fnod, unsi
                 }
                 se = !fnod ? node : (node + 16384) & ~16383;
         }       
-        if (!(se = ntfs_alloc_sector(s, se, 1, fsecno*ALLOC_M>ALLOC_FWD_MAX ? ALLOC_FWD_MAX : fsecno*ALLOC_M<ALLOC_FWD_MIN ? C_FWD_MIN : fsecno*ALLOC_M))) {
+        if (!(se = ntfs_alloc_sector(s, se, 1, fsecno*ALLOC_M>ALLOC_FWD_MAX ? ALLOC_FWD_MAX : fsecno*ALLOC_M<ALLOC_FWD_MIN ? ALLOC_FWD_MIN : fsecno*ALLOC_M))) {
                 brelse(bh);
                 return -1;
         }
