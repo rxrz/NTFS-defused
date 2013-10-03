@@ -96,7 +96,7 @@ static int ntfs_readdir(struct file *file, struct dir_context *ctx)
                 }
                 if (ntfs_inode->i_dno != le32_to_cpu(fno->u.external[0].disk_secno)) {
                         e = 1;
-                        ntfs_error(inode->i_sb, "corrupted inode: i_dno == %08x, fnode -> dnode == %08x", ntfs_inode->i_dno, 2_to_cpu(fno->u.external[0].disk_secno));
+                        ntfs_error(inode->i_sb, "corrupted inode: i_dno == %08x, fnode -> dnode == %08x", ntfs_inode->i_dno, le32_to_cpu(fno->u.external[0].disk_secno));
                 }
                 brelse(bh);
                 if (e) {
@@ -155,9 +155,9 @@ static int ntfs_readdir(struct file *file, struct dir_context *ctx)
                         if (ntfs_sb(inode->i_sb)->sb_chk) {
                                 if (de->first && !de->last && (de->namelen != 2
                                     || de ->name[0] != 1 || de->name[1] != 1))
-                                        ntfs_error(inode->i_sb, "ntfs_readdir: bad ^A^A entry; pos = %08lx", (unsigned long)ctx->;
+                                        ntfs_error(inode->i_sb, "ntfs_readdir: bad ^A^A entry; pos = %08lx", (unsigned long)ctx->pos);
                                 if (de->last && (de->namelen != 1 || de ->name[0] != 255))
-                                        ntfs_error(inode->i_sb, "ntfs_readdir: bad \\377 entry; pos = %08lx", (unsigned long)ctx->;
+                                        ntfs_error(inode->i_sb, "ntfs_readdir: bad \\377 entry; pos = %08lx", (unsigned long)ctx->pos);
                         }
                         ntfs_brelse4(&qbh);
                         ctx->pos = next_pos;
@@ -259,7 +259,7 @@ struct dentry *ntfs_lookup(struct inode *dir, struct dentry *dentry, unsigned in
         if (!de->directory) ntfs_result->i_parent_dir = dir->i_ino;
 
         if (de->has_acl || de->has_xtd_perm) if (!(dir->i_sb->s_flags & MS_RDONLY)) {
-                ntfs_error(result->i_sb, "ACLs or XPERM found. This is probably NTFS386. This driver doesn't support it now. Send me  info on these structures");
+                ntfs_error(result->i_sb, "ACLs or XPERM found. This is probably NTFS386. This driver doesn't support it now. Send me some info on these structures");
                 goto bail1;
         }
 
