@@ -1,0 +1,9 @@
+config NTFS_FS
+        tristate "Microsoft NTFS file system support"
+        depends on BLOCK
+        help
+          [Description needed]
+          <file:Documentation/filesystems/htfs.txt>.
+
+          To compile this file system support as a module, choose M here: the
+          module will be called ntfs.  If unsure, say N.
