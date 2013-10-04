@@ -1,9 +1,23 @@
 /*
- *  linux/fs/ntfs/dnode.c
+ * dnode.c - NTFS handling directory dnode tree - adding, deleteing & searching for dirents.
+ * Part of the Linux-NTFS project.
  *
- *  Mikulas Patocka (mikulas@artax.karlin.mff.cuni.cz), 1998-1999
+ * Copyright (c) Mikulas Patocka (mikulas@artax.karlin.mff.cuni.cz), 1998-1999
  *
- *  handling directory dnode tree - adding, deleteing & searching for dirents
+ * This program/include file is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License as published
+ * by the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program/include file is distributed in the hope that it will be
+ * useful, but WITHOUT ANY WARRANTY; without even the implied warranty
+ * of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program (in the main directory of the Linux-NTFS
+ * distribution in the file COPYING); if not, write to the Free Software
+ * Foundation,Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
 #include "ntfs_fn.h"
@@ -112,7 +126,7 @@ static struct ntfs_dirent *dnode_pre_last_de(struct dnode *d)
         de_end = dnode_end_de(d);
         for (de = dnode_first_de(d); de < de_end; de = de_next_de(de)) {
                 deee = dee; dee = de;
-        }       
+        }
         return deee;
 }
 
@@ -122,7 +136,7 @@ static struct ntfs_dirent *dnode_last_de(struct dnode *d)
         de_end = dnode_end_de(d);
         for (de = dnode_first_de(d); de < de_end; de = de_next_de(de)) {
                 dee = de;
-        }       
+        }
         return dee;
 }
 
@@ -285,7 +299,7 @@ static int ntfs_add_to_dnode(struct inode *i, dnode_secno dno,
                 ntfs_brelse4(&qbh);
                 kfree(nname);
                 return 1;
-        }       
+        }
         memcpy(nd, d, le32_to_cpu(d->first_free));
         copy_de(de = ntfs_add_de(i->i_sb, nd, name, namelen, down_ptr), new_de);
         for_all_poss(i, ntfs_pos_ins, get_pos(nd, de), 1);
@@ -394,7 +408,7 @@ int ntfs_add_dirent(struct inode *i,
                 if (!(c = ntfs_compare_names(i->i_sb, name, namelen, de->name, de->namelen, de->last))) {
                         ntfs_brelse4(&qbh);
                         return -1;
-                }       
+                }
                 if (c < 0) {
                         if (de->down) {
                                 dno = de_down_pointer(de);
@@ -408,14 +422,14 @@ int ntfs_add_dirent(struct inode *i,
         if (ntfs_check_free_dnodes(i->i_sb, FREE_DNODES_ADD)) {
                 c = 1;
                 goto ret;
-        }       
+        }
         i->i_version++;
         c = ntfs_add_to_dnode(i, dno, name, namelen, new_de, 0);
         ret:
         return c;
 }
 
-/* 
+/*
  * Find dirent with higher name in 'from' subtree and move it to 'to' dnode.
  * Return the dnode we moved from (to be checked later if it's empty)
  */
@@ -500,7 +514,7 @@ static secno move_to_top(struct inode *i, dnode_secno from, dnode_secno to)
         return dno;
 }
 
-/* 
+/*
  * Check if a dnode is empty and delete it from the tree
  * (chkdsk doesn't like empty dnodes)
  */
@@ -796,7 +810,7 @@ static struct ntfs_dirent *map_nth_dirent(struct super_block *s, dnode_secno dno
         for (i = 1; de < de_end; i++, de = de_next_de(de)) {
                 if (i == n) {
                         return de;
-                }       
+                }
                 if (de->last) break;
         }
         ntfs_brelse4(qbh);
@@ -861,7 +875,7 @@ struct ntfs_dirent *map_pos_dirent(struct inode *inode, loff_t *posp,
                 if (d->down) {
                         *posp = ((loff_t) ntfs_de_as_down_as_possible(inode->i_sb, de_down_pointer(d)) << 4) + 1;
                 }
-        
+
                 return de;
         }
 
@@ -883,11 +897,11 @@ struct ntfs_dirent *map_pos_dirent(struct inode *inode, loff_t *posp,
                         return de;
                 }
         }
-        
+
         ntfs_error(inode->i_sb, "map_pos_dirent: pointer to dnode %08x not found in parent dnode %08x",
                 dno, le32_to_cpu(dnode->up));
         ntfs_brelse4(&qbh0);
-        
+
         bail:
         *posp = 12;
         return de;
@@ -909,7 +923,7 @@ struct ntfs_dirent *map_dirent(struct inode *inode, dnode_secno dno,
         if (ntfs_sb(inode->i_sb)->sb_chk)
                 if (ntfs_stop_cycles(inode->i_sb, dno, &c1, &c2, "map_dirent")) return NULL;
         if (!(dnode = ntfs_map_dnode(inode->i_sb, dno, qbh))) return NULL;
-        
+
         de_end = dnode_end_de(dnode);
         for (de = dnode_first_de(dnode); de < de_end; de = de_next_de(de)) {
                 int t = ntfs_compare_names(inode->i_sb, name, len, de->name, de->namelen, de->last);
@@ -979,7 +993,7 @@ void ntfs_remove_dtree(struct super_block *s, dnode_secno dno)
         ntfs_error(s, "directory %08x is corrupted or not empty", rdno);
 }
 
-/* 
+/*
  * Find dirent for specified fnode. Use truncated 15-char name in fnode as
  * a help for searching.
  */
@@ -1014,7 +1028,7 @@ struct ntfs_dirent *map_fnode_dirent(struct super_block *s, fnode_secno fno,
         if (!(upf = ntfs_map_fnode(s, le32_to_cpu(f->up), &bh))) {
                 kfree(name2);
                 return NULL;
-        }       
+        }
         if (!fnode_is_dir(upf)) {
                 brelse(bh);
                 ntfs_error(s, "fnode %08x has non-directory parent %08x", fno, le32_to_cpu(f->up));

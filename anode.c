@@ -1,9 +1,23 @@
 /*
- *  linux/fs/ntfs/anode.c
+ * anode.c - handling NTFS anode tree that contains file allocation info.
+ * Part of the Linux-NTFS project.
  *
- *  Mikulas Patocka (mikulas@artax.karlin.mff.cuni.cz), 1998-1999
+ * Copyright (c) Mikulas Patocka (mikulas@artax.karlin.mff.cuni.cz), 1998-1999
  *
- *  handling NTFS anode tree that contains file allocation info
+ * This program/include file is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License as published
+ * by the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program/include file is distributed in the hope that it will be
+ * useful, but WITHOUT ANY WARRANTY; without even the implied warranty
+ * of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program (in the main directory of the Linux-NTFS
+ * distribution in the file COPYING); if not, write to the Free Software
+ * Foundation,Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
 #include "ntfs_fn.h"
@@ -114,7 +128,7 @@ secno ntfs_add_sector_to_btree(struct super_block *s, secno node, int fnod, unsi
                         return -1;
                 }
                 se = !fnod ? node : (node + 16384) & ~16383;
-        }       
+        }
         if (!(se = ntfs_alloc_sector(s, se, 1, fsecno*ALLOC_M>ALLOC_FWD_MAX ? ALLOC_FWD_MAX : fsecno*ALLOC_M<ALLOC_FWD_MIN ? ALLOC_FWD_MIN : fsecno*ALLOC_M))) {
                 brelse(bh);
                 return -1;
@@ -448,7 +462,7 @@ void ntfs_truncate_btree(struct super_block *s, secno f, int fno, unsigned secs)
                                 return;
                 if (!(anode = ntfs_map_anode(s, node, &bh))) return;
                 btree = &anode->btree;
-        }       
+        }
         nodes = btree->n_used_nodes + btree->n_free_nodes;
         for (i = 0; i < btree->n_used_nodes; i++)
                 if (le32_to_cpu(btree->u.external[i].file_secno) + le32_to_cpu(btree->u.external[i].length) >= secs) goto ff;

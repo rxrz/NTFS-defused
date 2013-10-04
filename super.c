@@ -1,9 +1,23 @@
 /*
- *  linux/fs/ntfs/super.c
+ * super.c - NTFS mounting, unmounting, error handling.
+ * Part of the Linux-NTFS project.
  *
- *  Mikulas Patocka (mikulas@artax.karlin.mff.cuni.cz), 1998-1999
+ * Copyright (c) Mikulas Patocka (mikulas@artax.karlin.mff.cuni.cz), 1998-1999
  *
- *  mounting, unmounting, error handling
+ * This program/include file is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License as published
+ * by the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program/include file is distributed in the hope that it will be
+ * useful, but WITHOUT ANY WARRANTY; without even the implied warranty
+ * of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program (in the main directory of the Linux-NTFS
+ * distribution in the file COPYING); if not, write to the Free Software
+ * Foundation,Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
 #include "ntfs_fn.h"
@@ -81,7 +95,7 @@ void ntfs_error(struct super_block *s, const char *fmt, ...)
         ntfs_sb(s)->sb_was_error = 1;
 }
 
-/* 
+/*
  * A little trick to detect cycles in many ntfs structures and don't let the
  * kernel crash on corrupted filesystem. When first called, set c2 to 0.
  *
@@ -399,9 +413,9 @@ static int ntfs_remount_fs(struct super_block *s, int *flags, char *data)
         int o;
         struct ntfs_sb_info *sbi = ntfs_sb(s);
         char *new_opts = kstrdup(data, GFP_KERNEL);
-        
+
         *flags |= MS_NOATIME;
-        
+
         ntfs_lock(s);
         uid = sbi->sb_uid; gid = sbi->sb_gid;
         umask = 0777 & ~sbi->sb_mode;
@@ -573,7 +587,7 @@ static int ntfs_fill_super(struct super_block *s, void *options, int silent)
         /* Load bitmap directory */
         if (!(sbi->sb_bmp_dir = ntfs_load_bitmap_directory(s, le32_to_cpu(superblock->bitmaps))))
                 goto bail4;
-        
+
         /* Check for general fs errors*/
         if (spareblock->dirty && !spareblock->old_wrote) {
                 if (errs == 2) {
@@ -724,4 +738,5 @@ static void __exit exit_ntfs_fs(void)
 
 module_init(init_ntfs_fs)
 module_exit(exit_ntfs_fs)
+MODULE_AUTHOR("Mikulas Patocka <mikulas@artax.karlin.mff.cuni.cz>");
 MODULE_LICENSE("GPL");

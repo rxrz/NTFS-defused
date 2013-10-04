@@ -1,9 +1,22 @@
 /*
- *  linux/fs/ntfs/alloc.c
+ * alloc.c - NTFS bitmap operations.  Part of the Linux-NTFS project.
  *
- *  Mikulas Patocka (mikulas@artax.karlin.mff.cuni.cz), 1998-1999
+ * Copyright (c) Mikulas Patocka (mikulas@artax.karlin.mff.cuni.cz), 1998-1999
  *
- *  NTFS bitmap operations
+ * This program/include file is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License as published
+ * by the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program/include file is distributed in the hope that it will be
+ * useful, but WITHOUT ANY WARRANTY; without even the implied warranty
+ * of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program (in the main directory of the Linux-NTFS
+ * distribution in the file COPYING); if not, write to the Free Software
+ * Foundation,Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
 #include "ntfs_fn.h"
@@ -43,7 +56,7 @@ static int chk_if_allocated(struct super_block *s, secno sec, char *msg)
  * Check if sector(s) have proper number and additionally check if they're
  * allocated in bitmap.
  */
-        
+
 int ntfs_chk_sectors(struct super_block *s, secno start, int len, char *msg)
 {
         if (start + len < start || start < 0x12 ||
@@ -178,7 +191,7 @@ secno ntfs_alloc_sector(struct super_block *s, secno near, unsigned n, int forwa
                 if (near_bmp+i < n_bmps && ((sec = alloc_in_bmp(s, (near_bmp+i) << 14, n, forward)))) {
                         sbi->sb_c_bitmap = near_bmp+i;
                         goto ret;
-                }       
+                }
                 if (!forward) {
                         if (near_bmp-i-1 >= 0 && ((sec = alloc_in_bmp(s, (near_bmp-i-1) << 14, n, forward)))) {
                                 sbi->sb_c_bitmap = near_bmp-i-1;
@@ -267,7 +280,7 @@ void ntfs_free_sectors(struct super_block *s, secno sec, unsigned n)
         new_map:
         if (!(bmp = ntfs_map_bitmap(s, sec >> 14, &qbh, "free"))) {
                 return;
-        }       
+        }
         new_tst:
         if ((le32_to_cpu(bmp[(sec & 0x3fff) >> 5]) >> (sec & 0x1f) & 1)) {
                 ntfs_error(s, "sector %08x not allocated", sec);
@@ -279,7 +292,7 @@ void ntfs_free_sectors(struct super_block *s, secno sec, unsigned n)
                 ntfs_mark_4buffers_dirty(&qbh);
                 ntfs_brelse4(&qbh);
                 return;
-        }       
+        }
         if (!(++sec & 0x3fff)) {
                 ntfs_mark_4buffers_dirty(&qbh);
                 ntfs_brelse4(&qbh);
@@ -396,7 +409,7 @@ struct fnode *ntfs_alloc_fnode(struct super_block *s, secno near, fnode_secno *f
         if (!(f = ntfs_get_sector(s, *fno, bh))) {
                 ntfs_free_sectors(s, *fno, 1);
                 return NULL;
-        }       
+        }
         memset(f, 0, 512);
         f->magic = cpu_to_le32(FNODE_MAGIC);
         f->ea_offs = cpu_to_le16(0xc4);

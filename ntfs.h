@@ -1,23 +1,35 @@
 /*
- *  linux/fs/ntfs/ntfs.h
+ * ntfs.h - NTFS structures by Chris Smith, 1993. Part of the Linux-NTFS project.
  *
- *  NTFS structures by Chris Smith, 1993
+ * Copyright (c) Mikulas Patocka (mikulas@artax.karlin.mff.cuni.cz), 1998-1999
  *
- *  a little bit modified by Mikulas Patocka, 1998-1999
+ * This program/include file is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License as published
+ * by the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program/include file is distributed in the hope that it will be
+ * useful, but WITHOUT ANY WARRANTY; without even the implied warranty
+ * of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program (in the main directory of the Linux-NTFS
+ * distribution in the file COPYING); if not, write to the Free Software
+ * Foundation,Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
+ * The paper
+ *   Duncan, Roy
+ *   Design goals and implementation of the new High Performance File System
+ *   Microsoft Systems Journal  Sept 1989  v4 n5 p1(13)
+
+ * describes what NTFS looked like when it was new, and it is the source
+ * of most of the information given here.  The rest is conjecture.
+ *
+ * For definitive information on the Duncan paper, see it, not this file.
+ * For definitive information on NTFS, ask somebody else -- this is guesswork.
+ * There are certain to be many mistakes.
  */
-
-/* The paper
-
-     Duncan, Roy
-     Design goals and implementation of the new High Performance File System
-     Microsoft Systems Journal  Sept 1989  v4 n5 p1(13)
-
-   describes what NTFS looked like when it was new, and it is the source
-   of most of the information given here.  The rest is conjecture.
-
-   For definitive information on the Duncan paper, see it, not this file.
-   For definitive information on NTFS, ask somebody else -- this is guesswork.
-   There are certain to be many mistakes. */
 
 #if !defined(__LITTLE_ENDIAN) && !defined(__BIG_ENDIAN)
 #error unknown endian
@@ -175,7 +187,7 @@ struct ntfs_spare_block
    I bet you can see it coming... */
 
 #define BAD_MAGIC 0
-       
+
 /* The hotfix map is 4 sectors long.  It looks like
 
        secno from[n_spares];
@@ -246,7 +258,7 @@ struct code_page_data
    16384 sectors is 8 meg, and each 8 meg band has a 4-sector bitmap.
    Bit order in the maps is little-endian.  0 means taken, 1 means free.
 
-   Bit map sectors are marked allocated in the bit maps, and so are sectors 
+   Bit map sectors are marked allocated in the bit maps, and so are sectors
    off the end of the partition.
 
    Band 0 is sectors 0-3fff, its map is in sectors 18-1b.

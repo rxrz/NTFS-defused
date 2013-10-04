@@ -1,10 +1,24 @@
 /*
- *  linux/fs/ntfs/namei.c
+ * namei.c - NTFS adding & removing files & directories. Part of the Linux-NTFS project.
  *
- *  Mikulas Patocka (mikulas@artax.karlin.mff.cuni.cz), 1998-1999
+ * Copyright (c) Mikulas Patocka (mikulas@artax.karlin.mff.cuni.cz), 1998-1999
  *
- *  adding & removing files & directories
+ * This program/include file is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License as published
+ * by the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program/include file is distributed in the hope that it will be
+ * useful, but WITHOUT ANY WARRANTY; without even the implied warranty
+ * of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program (in the main directory of the Linux-NTFS
+ * distribution in the file COPYING); if not, write to the Free Software
+ * Foundation,Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
+
 #include <linux/sched.h>
 #include "ntfs_fn.h"
 
@@ -47,9 +61,9 @@ static int ntfs_mkdir(struct inode *dir, struct dentry *dentry, umode_t mode)
         ntfs_i(result)->i_parent_dir = dir->i_ino;
         ntfs_i(result)->i_dno = dno;
         result->i_ctime.tv_sec = result->i_mtime.tv_sec = result->i_atime.tv_sec = local_to_gmt(dir->i_sb, le32_to_cpu(dee.creation_date));
-        result->i_ctime.tv_nsec = 0; 
-        result->i_mtime.tv_nsec = 0; 
-        result->i_atime.tv_nsec = 0; 
+        result->i_ctime.tv_nsec = 0;
+        result->i_mtime.tv_nsec = 0;
+        result->i_atime.tv_nsec = 0;
         ntfs_i(result)->i_ea_size = 0;
         result->i_mode |= S_IFDIR;
         result->i_op = &ntfs_dir_iops;
@@ -143,7 +157,7 @@ static int ntfs_create(struct inode *dir, struct dentry *dentry, umode_t mode, b
         result = new_inode(dir->i_sb);
         if (!result)
                 goto bail1;
-        
+
         ntfs_init_inode(result);
         result->i_ino = fno;
         result->i_mode |= S_IFREG;
@@ -514,7 +528,7 @@ fail:
 const struct address_space_operations ntfs_symlink_aops = {
         .readpage       = ntfs_symlink_readpage
 };
-        
+
 static int ntfs_rename(struct inode *old_dir, struct dentry *old_dentry,
                 struct inode *new_dir, struct dentry *new_dentry)
 {
@@ -539,7 +553,7 @@ static int ntfs_rename(struct inode *old_dir, struct dentry *old_dentry,
 
         ntfs_lock(i->i_sb);
         /* order doesn't matter, due to VFS exclusion */
-        
+
         /* Erm? Moving over the empty non-busy directory is perfectly legal */
         if (new_inode && S_ISDIR(new_inode->i_mode)) {
                 err = -EINVAL;
@@ -581,7 +595,7 @@ static int ntfs_rename(struct inode *old_dir, struct dentry *old_dentry,
                 if (new_dir != old_dir) ntfs_brelse4(&qbh);
                 goto end1;
         }
-        
+
         if (new_dir == old_dir)
                 if (!(dep = map_dirent(old_dir, ntfs_i(old_dir)->i_dno, old_name, old_len, &dno, &qbh))) {
                         ntfs_error(i->i_sb, "lookup succeeded but map dirent failed at #2");

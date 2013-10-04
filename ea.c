@@ -1,14 +1,27 @@
 /*
- *  linux/fs/ntfs/ea.c
+ * ea.c - NTFS handling extended attributes.  Part of the Linux-NTFS project.
  *
- *  Mikulas Patocka (mikulas@artax.karlin.mff.cuni.cz), 1998-1999
+ * Copyright (c) Mikulas Patocka (mikulas@artax.karlin.mff.cuni.cz), 1998-1999
  *
- *  handling extended attributes
+ * This program/include file is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License as published
+ * by the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program/include file is distributed in the hope that it will be
+ * useful, but WITHOUT ANY WARRANTY; without even the implied warranty
+ * of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program (in the main directory of the Linux-NTFS
+ * distribution in the file COPYING); if not, write to the Free Software
+ * Foundation,Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
 #include "ntfs_fn.h"
 
-/* Remove external extended attributes. ano specifies whether a is a 
+/* Remove external extended attributes. ano specifies whether a is a
    direct sector where eas starts or an anode */
 
 void ntfs_ea_ext_remove(struct super_block *s, secno a, int ano, unsigned len)
@@ -180,7 +193,7 @@ char *ntfs_get_ea(struct super_block *s, struct fnode *fnode, char *key, int *si
         return NULL;
 }
 
-/* 
+/*
  * Update or create extended attribute 'key' with value 'data'. Note that
  * when this ea exists, it MUST have the same size as size of data.
  * This driver can't change sizes of eas ('cause I just don't need it).
@@ -364,4 +377,3 @@ void ntfs_set_ea(struct inode *inode, struct fnode *fnode, const char *key,
                 else ntfs_free_sectors(s, le32_to_cpu(fnode->ea_secno) + ((le32_to_cpu(fnode->ea_size_l) + 511) >> 9), len - ((le32_to_cpu(fnode->ea_size_l) + 511) >> 9));
         else fnode->ea_secno = fnode->ea_size_l = cpu_to_le32(0);
 }
-        

@@ -1,9 +1,23 @@
 /*
- *  linux/fs/ntfs/map.c
+ * map.c - NTFS mapping structures to memory with some minimal checks.
+ * Part of the Linux-NTFS project.
  *
- *  Mikulas Patocka (mikulas@artax.karlin.mff.cuni.cz), 1998-1999
+ * Copyright (c) Mikulas Patocka (mikulas@artax.karlin.mff.cuni.cz), 1998-1999
  *
- *  mapping structures to memory with some minimal checks
+ * This program/include file is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License as published
+ * by the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program/include file is distributed in the hope that it will be
+ * useful, but WITHOUT ANY WARRANTY; without even the implied warranty
+ * of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program (in the main directory of the Linux-NTFS
+ * distribution in the file COPYING); if not, write to the Free Software
+ * Foundation,Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
 #include "ntfs_fn.h"
@@ -82,7 +96,7 @@ unsigned char *ntfs_load_code_page(struct super_block *s, secno cps)
                 printk("NTFS: Code page index out of array\n");
                 return NULL;
         }
-        
+
         if (!(cpd = ntfs_map_sector(s, cpds, &bh, 0))) return NULL;
         if (le16_to_cpu(cpd->offs[cpi]) > 0x178) {
                 printk("NTFS: Code page index out of sector\n");
@@ -103,7 +117,7 @@ unsigned char *ntfs_load_code_page(struct super_block *s, secno cps)
         for (i=128; i<256; i++) cp_table[i]=i;
         for (i=128; i<256; i++) if (cp_table[i-128]!=i && cp_table[i-128]>=128)
                 cp_table[cp_table[i-128]] = i;
-        
+
         return cp_table;
 }
 
@@ -116,7 +130,7 @@ __le32 *ntfs_load_bitmap_directory(struct super_block *s, secno bmp)
         if (!(b = kmalloc(n * 512, GFP_KERNEL))) {
                 printk("NTFS: can't allocate memory for bitmap directory\n");
                 return NULL;
-        }       
+        }
         for (i=0;i<n;i++) {
                 __le32 *d = ntfs_map_sector(s, bmp+i, &bh, n - i - 1);
                 if (!d) {
@@ -234,7 +248,7 @@ struct dnode *ntfs_map_dnode(struct super_block *s, unsigned secno,
                 if (secno & 3) {
                         ntfs_error(s, "dnode %08x not byte-aligned", secno);
                         return NULL;
-                }       
+                }
         }
         if ((dnode = ntfs_map_4sectors(s, secno, qbh, DNODE_RD_AHEAD)))
                 if (ntfs_sb(s)->sb_chk) {
@@ -271,7 +285,7 @@ struct dnode *ntfs_map_dnode(struct super_block *s, unsigned secno,
                                         goto bail;
                                 }
                                 pp = p;
-                                
+
                         }
                         if (p != le32_to_cpu(dnode->first_free)) {
                                 ntfs_error(s, "size on last dirent does not match first_free; dnode %08x", secno);
