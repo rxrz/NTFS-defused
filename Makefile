@@ -1,17 +1,22 @@
-#
-# Makefile for the Linux NTFS filesystem routines.
-#
+# Rules for making the NTFS driver.
 
 obj-m += ntfs.o
 
-ntfs-y := alloc.o anode.o buffer.o dentry.o dir.o dnode.o ea.o file.o \
-             inode.o map.o name.o namei.o super.o
+ntfs-y := aops.o attrib.o collate.o compress.o debug.o dir.o file.o \
+		  index.o inode.o mft.o mst.o namei.o runlist.o super.o sysctl.o \
+		  unistr.o upcase.o
+
+ntfs-y += bitmap.o lcnalloc.o logfile.o quota.o usnjrnl.o
+
+ccflags-y := -DNTFS_VERSION=\"2.1.30\"
+ccflags-y += -DDEBUG
+ccflags-y += -DNTFS_RW
 
 EXTRA_FLAGS += -I$(PWD)
 
 #KDIR	:= /usr/src/linux/
 KDIR	:= /lib/modules/$(shell uname -r)/build
-PWD	:= $(shell pwd)
+PWD		:= $(shell pwd)
 
 
 all:
